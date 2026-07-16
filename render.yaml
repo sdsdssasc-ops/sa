@@ -1,0 +1,34 @@
+# ============================================================
+# ملف Render Blueprint — ينشر الموقع + قاعدة البيانات بضغطة واحدة
+# ============================================================
+# بعد ما ترفع المشروع على GitHub:
+#   Render.com ← New ← Blueprint ← اختر المستودع ← Apply
+# وهو يسوي كل شي تلقائيًا (موقع + قاعدة بيانات PostgreSQL مجانية)
+
+services:
+  - type: web
+    name: taafy-app                 # اسم الخدمة (يظهر في الرابط: taafy-app.onrender.com)
+    runtime: node
+    plan: free                      # الخطة المجانية
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL           # رابط القاعدة يجي تلقائيًا من القاعدة تحت
+        fromDatabase:
+          name: taafy-db
+          property: connectionString
+      - key: JWT_SECRET             # مفتاح تشفير الجلسات — Render يولّده عشوائيًا
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_EMAIL            # ← بريد حساب الأدمن (غيّره لبريدك)
+        value: admin@taafy.local
+      - key: ADMIN_PASSWORD         # ← كلمة مرور الأدمن (غيّرها فورًا!)
+        value: admin123456
+
+databases:
+  - name: taafy-db                  # قاعدة PostgreSQL مجانية
+    plan: free
+    databaseName: taafy
+    user: taafy
